@@ -2,7 +2,7 @@
 
 目标：2027 年 9 月前拿到外企或国际化技术公司的 Backend / Senior Backend / Platform Engineer offer。
 
-文档版本：v0.12 · 整理日期：2026-10-09 · 状态：持续更新。
+文档版本：v0.13 · 整理日期：2026-10-09 · 状态：持续更新。
 
 本文件是跨对话使用的学习记录。整理日期不代表练习日期；计划、建议表达和实际完成情况分开记录。每次使用最新版。
 
@@ -12,13 +12,14 @@ Notion 笔记：[W01 · System Design Basics · 系统设计基础](https://www.
 
 | 项目 | 当前记录 |
 |---|---|
-| 当前模块 | Week 1：System Design Basics |
+| 当前模块 | Week 1：System Design Basics 待复测；Week 2 预习资料已准备，学习尚未开始 |
 | 已知进度 | 已核对 Notion Day 1–6 部分书面产出；10-09 完成 S007 重定向、短码取舍与并发冲突练习；完整设计与脱稿串联未验收 |
 | 尚未确认 | Day 1–5 遗留项与独立解释、Day 6 完整设计/瓶颈故障/真实项目故事、Day 7 验收；学习时长未确认 |
 | 已有口语证据 | S007 自行指出可猜测风险、加盐重算、查重与数据库唯一索引；提示并发问题后提出 Lua，Location/NX 提示后能答；完整流程与原子性待独立复测 |
 | 当前难点 | 能理解内容，但英语输出不够顺畅；表达延迟目标时句式冗长；需求总结容易断开 |
 | 下一项技术任务 | 脱稿区分 NX/EX，说明为何 Redis 单线程不足以保证先查再写原子；补冲突后的重试，再复测浏览器新请求 |
 | 下一项口语任务 | 先用 2–3 句英语解释只在短码不存在时写入及失败后如何处理，再串联重定向流程；使用短句，一次一个问题 |
+| 下一项文字学习 | 用户计划明天并行预习 Week 2：先读 Cache-Aside 与 String/Hash，画短链接缓存命中/未命中流程并写 3–5 句英文；尚无完成证据 |
 | 下次复习 | 优先 S007 的条件写入与冲突重试，再复习 Day 3 重定向、Day 6 / P16、Day 5 / P15、Day 4 / P14 / P11 及 Day 1–2 遗留项 |
 | 本周验收 | 35 分钟英文 URL Shortener 模拟面试；目前未记录完成 |
 
@@ -131,6 +132,21 @@ Day 5 统一练习假设：每天新增 100 万条链接、每天 1 亿次重定
 
 本周验收：可以在合理提示很少的情况下，用英语完成需求澄清、API / 实体、必要估算、总体设计，以及至少两个有依据的深入讨论。P1 用作诊断，不作为本周完成的额外门槛。
 
+### Week 2 预习资料（已准备，未开始学习）
+
+2026-10-09 用户希望明天同时做 Week 1 薄弱点复测与 Week 2 新内容学习；按原路线提前提供资料，不将 Week 1 标为验收完成，不新增实际练习 Session。建议时间为口语 15–20 分钟、文字学习 35–40 分钟，均非实际投入记录。
+
+| 顺序 | 官方英文资料（2026-10-09 已打开核验） | 阅读范围与产出 |
+|---|---|---|
+| 1 | [Microsoft — Cache-Aside pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/cache-aside) | P0：命中、未命中、查数据库及回填；画短链接的两条读取路径 |
+| 2 | [Redis — Data types](https://redis.io/docs/latest/develop/data-types/) | P0：先读 String/Hash，说明 URL 映射选型；随后认识 List/Set/Sorted Set 场景，不穷举所有类型 |
+| 3 | [Redis — EXPIRE](https://redis.io/docs/latest/commands/expire/) | P0：TTL 与过期的含义、缓存为何设置过期时间 |
+| 4 | [Redis — Key eviction](https://redis.io/docs/latest/develop/reference/eviction/) | P0：过期与内存淘汰的区别；P1：LRU/LFU、allkeys/volatile |
+
+明天只要求资料 1 与资料 2 的 String/Hash 部分，写 3–5 句回答“How would you use Redis to cache URL mappings in a URL shortener?”。一致性竞态、穿透/击穿/雪崩、热 Key 与分布式锁留到 Week 3 深入；今天涉及的原子性作为 Week 1 遗留项复测，不要求现在展开 Redis 内部实现（P2）。
+
+Notion 组织建议：新建与 W01 并列的“W02 · Cache & Redis Basics · 缓存与 Redis 基础”页面（尚未创建）；第一节为“Day 1 — Cache-Aside 与数据类型选择”，沿用“我的原文 → 标准英文参考答案 → 简短评价”。W01 原内容保留，后两部分在实际反馈后补写，不提前当作学习产出。
+
 ## 6. 当前能力证据
 
 2026-09-26 仅新增视频观看自述，无现场技术回答或口语验收，以下能力与表达状态不升级。
@@ -219,7 +235,7 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 | Week | 主题 | 主要知识点 | 状态 |
 |---|---|---|---|
 | 01 | System Design Basics | 需求、指标、估算、API、请求路径、扩展、权衡 | 进行中 |
-| 02 | Cache / Redis 基础 | 数据类型、TTL、淘汰、Cache-Aside | 待开展 |
+| 02 | Cache / Redis 基础 | 数据类型、TTL、淘汰、Cache-Aside | 预习资料已准备；实际学习待开展 |
 | 03 | Cache / Redis 进阶 | 一致性、穿透 / 击穿 / 雪崩、热 Key、原子操作与锁 | 待开展 |
 | 04 | Database 基础 | 建模、SQL、索引、执行计划、慢查询 | 待开展 |
 | 05 | Database 进阶 | 事务、隔离、MVCC、锁、复制、读写分离、分片 | 待开展 |
@@ -408,5 +424,6 @@ Session ID：S008（依次递增；同一次练习只更新一条）
 | 2026-10-07 | v0.10 | 审核 Notion Day 5 容量估算，保留分行原文并补英文参考及简评；更新部分书面证据、P15 与复习项，记录 S005，独立口述未验收 |
 | 2026-10-08 | v0.11 | 审核 Notion Day 6 四步框架，保留原文排版并补英文参考与简评；更新部分产出证据、P16、复习项和 S006，完整设计及口语未验收 |
 | 2026-10-09 | v0.12 | 收尾 S007；记录自行查重/唯一索引、提示并发问题后提出 Lua、NX 纠正后能答；更新快照、Day 3/6、P10/P17–P19、E04–E05 及复习项；补三到四个月阶段评估建议，保留独立验证缺口 |
+| 2026-10-09 | v0.13 | 按用户计划准备 Week 2 缓存/Redis 官方资料及明日并行安排；建议单独 W02 Notion 页面，尚未创建；Week 1 仍待验收，不新增学习完成项 |
 
 初始来源：当前求职目标与学习偏好；已有全程周计划；`backend-week1-prompt.md`；`backend-week1-day1-chat-prompt.md`；已有 Day 1 与口语练习摘要。练习指令只作为计划来源，不作为完成证据。新练习优先用当次可观察的表现更新。
