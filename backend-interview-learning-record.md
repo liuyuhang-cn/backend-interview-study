@@ -2,7 +2,7 @@
 
 目标：2027 年 9 月前拿到外企或国际化技术公司的 Backend / Senior Backend / Platform Engineer offer。
 
-文档版本：v0.14 · 整理日期：2026-10-09 · 状态：持续更新。
+文档版本：v0.15 · 整理日期：2026-10-11 · 状态：持续更新。
 
 本文件是跨对话使用的学习记录。整理日期不代表练习日期；计划、建议表达和实际完成情况分开记录。每次使用最新版。
 
@@ -13,14 +13,14 @@ Notion 笔记：[W01 · System Design Basics · 系统设计基础](https://www.
 | 项目 | 当前记录 |
 |---|---|
 | 当前模块 | Week 1：System Design Basics 待复测；Week 2 预习资料已准备，学习尚未开始 |
-| 已知进度 | 已核对 Notion Day 1–6 部分书面产出；10-09 完成 S007 重定向、短码取舍与并发冲突练习；完整设计与脱稿串联未验收 |
+| 已知进度 | 已核对 Notion Day 1–6 部分书面产出；10-11 完成 S008 薄弱点复测，覆盖冲突重试、Redis 原子性、重定向、容量估算及 TTL/淘汰；完整设计与脱稿串联未验收 |
 | 尚未确认 | Day 1–5 遗留项与独立解释、Day 6 完整设计/瓶颈故障/真实项目故事、Day 7 验收；学习时长未确认 |
-| 已有口语证据 | S007 自行指出可猜测风险、加盐重算、查重与数据库唯一索引；提示并发问题后提出 Lua，Location/NX 提示后能答；完整流程与原子性待独立复测 |
+| 已有口语证据 | S008 自行答出唯一索引及换盐重试，也能说明两条 Redis 命令间的竞态；NX/EX、SET NX 与 Lua 的适用范围经纠正后能答；301/302 与缓存混淆，经模板后完整复述重定向流程 |
 | 当前难点 | 能理解内容，但英语输出不够顺畅；表达延迟目标时句式冗长；需求总结容易断开 |
-| 下一项技术任务 | 脱稿区分 NX/EX，说明为何 Redis 单线程不足以保证先查再写原子；补冲突后的重试，再复测浏览器新请求 |
-| 下一项口语任务 | 先用 2–3 句英语解释只在短码不存在时写入及失败后如何处理，再串联重定向流程；使用短句，一次一个问题 |
+| 下一项技术任务 | 换场景独立复测 NX/EX、SET NX 与 Lua 的适用范围；再脱稿串联短链接创建和完整重定向流程；容量补峰值与存储开销 |
+| 下一项口语任务 | 不看模板复述 301/302、Location 与浏览器新请求；再解释 expiration 与 eviction，使用 expires / memory limit / eviction policy |
 | 下一项文字学习 | 用户计划明天并行预习 Week 2：先看英文视频指定片段练听力，再查 Cache-Aside 与 String/Hash 文档，画两条读取路径并写 3–5 句英文；尚无完成证据 |
-| 下次复习 | 优先 S007 的条件写入与冲突重试，再复习 Day 3 重定向、Day 6 / P16、Day 5 / P15、Day 4 / P14 / P11 及 Day 1–2 遗留项 |
+| 下次复习 | 优先复测 S008 的 NX/EX、Lua/SET NX 与重定向，再复习 Day 6 / P16、Day 5 / P15、Day 4 / P14 / P11 及 Day 1–2 遗留项 |
 | 本周验收 | 35 分钟英文 URL Shortener 模拟面试；目前未记录完成 |
 
 如果学习者提供了更新的信息，先据此修订快照。不要根据日期自动推进到下一周。
@@ -36,6 +36,7 @@ Notion 笔记：[W01 · System Design Basics · 系统设计基础](https://www.
 - AI / Agent：通过 DeepLearning.AI 英文课程兼顾技术与听力；应与后端求职主线协调。
 - 学习方法：每个模块拆知识点 → 标 P0 / P1 / P2 → 英文视频 → 英文面试题 → 模拟面试 → 技术与英文反馈。
 - 2026-10-09 偏好确认：技术输入以英文 YouTube 视频为主，兼顾听力，官方文档辅助核对；日常可中英混合表达，用户希望得到纠正，先让其说完再每轮反馈 1–2 个重点，不据转写推断发音。
+- 2026-10-11 口语训练偏好：学习者自述回答时常先想中文再翻成英文，反应较慢且表达不够自然。训练时先提取 3–4 个英文关键词或句块直接组织短句；同题采用“独立回答 → 只修 1–2 点 → 脱稿重答”，隔天换场景复测；英文视频选择兼顾后端内容、清晰口语和可跟读句块，每次建议跟读 5–10 分钟。以上时长为训练建议，不是实际投入记录。
 - P0：目标岗位面试必须能独立解释或使用；P1：有助于深入追问和体现经验；P2：暂缓，遇到岗位要求再补。优先级可以随目标岗位调整。
 
 ## 3. 给接手模型的工作约定
@@ -160,9 +161,9 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 |---|---|---|---|
 | 需求与范围 | 09-28 笔记列出创建与重定向；方向表述需修正，范围和澄清问题缺失；独立解释未验证 | 有英文书面要点；历史口语片段保留，连贯口述待验证 | 补范围与澄清问题，再脱稿讲 60–90 秒 |
 | 性能指标 | 09-28 笔记将 200 ms 关联重定向，但缺分位数与边界；用户/URL 总量不等于 QPS；独立解释未验证 | 笔记“low latency on redict under 200 miliseconds”已有简短要点，尚无口述证据 | 先补延迟口径与边界，再解释吞吐/并发及规模与流量区别 |
-| API 与请求流程 | 10-01 笔记列 POST/GET 与基本链路；10-09 自行补出 301/302 和跳转，曾把状态码与 Location 关系混淆，经明确提示后能说出浏览器从 Location 读取原 URL；该点为提示后能答，后续请求与状态码取舍未验收 | S007 有现场转写；需修正 server response 为 returns、browser get 为 gets，仍依赖分步提示，不评价发音 | 独立说明浏览器下一步，再串联完整流程；数据字段和无效短码待复习 |
-| 短码生成与取舍 | S007 自行指出可猜测风险、加盐重算、查重及唯一索引。曾误认为 Redis 单线程即可避免并发；解释交错后自行提出 Lua 合并读写；SET EX 经纠正后说出 SET NX，记提示后能答。脚本分支和锁范围未展开 | 原因句与 different salt 提示后复述；自行说出 combine the read and write，in one time 可改 atomically；末句用 and 连接 Lua 与 NX，可用 or 表示替代方案，待复述 | 脱稿解释 NX/EX 与原子性，补仅在不存在时写入及冲突重试；Lua/NX 无需为该简单操作同时使用属教练补充 |
-| 容量估算 | 10-07 原文以 1 亿日活、每人至少一次、约 10^5 秒/天得约 1k QPS，换算方向正确；未区分下界与基线，缺峰值/存储，单应用与单 Redis 够用的结论缺证据 | 有英文书面估算；serve/send 主谓一致及 bound up 用词需修正，口述未验证 | 独立计算峰值与存储，说明单机容量需峰值负载、单请求成本、延迟与资源压测证据 |
+| API 与请求流程 | S008 首答仍将 301/302 与缓存混淆；分步提示后能说明服务器查询短码、在 Location 放原始 URL 并返回 301/302，浏览器发起新请求。状态码取舍、数据字段和无效短码未验收 | 能在模板后完整复述 permanent/temporary redirect 与 sends a new request；仍依赖提示，不评价发音 | 不看模板串联完整流程；再补 301/302 取舍、数据字段和无效短码行为 |
+| 短码生成与取舍 | S008 自行选择数据库唯一索引，并答出失败后换 salt 重算短码；自行说明检查与写入是两条命令及 Lua 可合并执行。NX/EX 首次仍混淆，且最初误选 Lua 处理简单条件写入；纠正后能说明 SET NX 适合单步条件写入、Lua 适合多个依赖步骤 | 能复述 separate commands、atomically、race condition；经提示使用 “If the insert fails...” 和 “If the key does not exist...”，仍需换场景独立使用 | 换场景脱稿区分 NX/EX 与 Lua/SET NX；独立表达条件分支，确认不再说反不存在与已存在时的写入结果 |
+| 容量估算 | S008 口述得出 1 亿请求/天约 1k 平均 QPS、五倍峰值约 5k QPS，结果独立正确，秒数表述经提示修正；存储题由教练给出 100 万新增/天、500 B/条约 182.5 GB/年的答案后完整复述 | 能使用 average QPS / peak QPS；ten to the fifth、one thousand 及 five times the average 经纠正，存储表达属模板复述 | 换一组数据独立计算峰值与原始存储；补索引、副本、备份及数据库开销，并说明单机结论需要压测证据 |
 | 扩展与瓶颈 | 10-07 原文正确区分单机增加 CPU/内存与增加服务器，提及 Redis 缓存和副本；未说明多实例请求分配、共享状态、瓶颈与取舍；独立解释未验证 | 有英文书面短段；scaling 词形及 can 后动词形式需修正，口述未验证 | 解释增加应用实例为何不能直接消除数据库瓶颈，再按指标分析两个候选瓶颈 |
 | 技术取舍 / 项目迁移 | 10-08 笔记列出四步框架，但 data flow 仅提消息队列、deep dive 仅提容量，概念范围待澄清；具体设计与真实项目证据未提供 | 有英文框架段落；独立口述未验证 | 先追踪具体请求的数据流，再讲瓶颈/故障和一个真实项目案例 |
 
@@ -210,11 +211,12 @@ E02 的最小修改只修正英语，并未让需求变得足够精确。技术�
 | P12 | 澄清不确定之处 | “Could you clarify what you mean by [term]?” | 待首次验证 |
 | P13 | 描述 API 请求 | “The client sends a POST request to create a short URL.” | 待首次使用；原笔记“create short url post method”为关键词，后续讲其他 API 时复习 |
 | P14 | 描述扩展方式 | “We can scale vertically by adding CPU capacity and memory, or horizontally by adding more servers.” | 待首次使用；下次换用 RTA 服务说明两种扩展方式，检验能否独立表达 |
-| P15 | 容量估算与假设 | “Assuming [N] requests per day, the average request rate is about [Q] requests per second.” | 待首次使用；下次换一组日请求量独立估算，再区分平均与峰值 |
+| P15 | 容量估算与假设 | “Assuming [N] requests per day, the average request rate is about [Q] requests per second.” | S008 独立算出约 1k 平均、5k 峰值 QPS；标准句式经提示。下次换一组数据独立表达并计算存储 |
 | P16 | 引入设计深挖 | “I would dive deeper into [bottleneck] and explain the trade-offs.” | 待首次使用；原文用 dive into 作为步骤名；下次换一个瓶颈复述，区分 deep dives 与 dive into |
 | P17 | 从响应头读取信息 | “The browser gets the original URL from the Location header in the server's response.” | 提示后可用（相关句意）；gets 及所属关系需修正，完整模板待独立使用；下次换为客户端读取 Retry-After 时复习 |
-| P18 | 说明原子操作 | “I would use a Lua script to execute the read and write operations atomically.” | S007 自行提出 Lua 合并读写；atomically 为教练提供，待复述；下次换为库存检查与扣减场景复习 |
-| P19 | 描述条件与处理 | “If [condition], I would [action].” / “I would write the key only if it doesn't already exist.” | S007 自行使用 If I use… 框架；完整条件写入句为教练示范，待独立使用；下次换为缓存未命中或唯一约束冲突场景复习 |
+| P18 | 说明原子操作 | “I would use a Lua script to execute the read and write operations atomically.” | S008 经示范完整复述，并自行说明两条命令间存在并发问题；atomically / race condition 仍属提示后使用，下次换库存场景独立验证 |
+| P19 | 描述条件与处理 | “If [condition], I would [action].” / “I would write the key only if it doesn't already exist.” | S008 自行用失败条件说明换 salt 重试；SET NX 的存在条件一度说反，纠正后能答；下次换缓存未命中场景验证迁移 |
+| P20 | 区分过期与淘汰 | “Expiration removes keys when their TTL expires. Eviction removes keys according to an eviction policy when Redis reaches its memory limit.” | S008 自行区分 TTL 到期与内存满后移除；expires / remove / eviction policy 经提示，待换场景独立复述 |
 
 S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I use Lua script ... and use set NX, command”，NX 记提示后能答，不视为独立掌握。EX 设置过期秒数，NX 仅在键不存在时写入；最小表达为“I would use SET with the NX option.”。Lua 也可实现条件写入；若表达两种可选方案，用 or 代替 and，该简单场景不必组合使用。脚本分支与冲突重试待验证。[Redis SET 官方文档](https://redis.io/docs/latest/commands/set/)、[Lua 原子执行说明](https://redis.io/docs/latest/develop/programmability/eval-intro/)
 
@@ -222,14 +224,15 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 
 | 优先顺序 | 内容 | 复习触发条件 | 通过的证据 |
 |---|---|---|---|
-| 1 | Day 3 / P10 / P18–P19 / E04–E05：短码取舍与碰撞 | 下次练习第一题 | NX 已提示后能答；脱稿区分 NX/EX，说明 Lua 与 NX 是可选方案，补条件分支与应用重试，独立解释单命令与多步骤原子性 |
-| 2 | Day 3 / P13 / P17：API 与重定向流程 | 下次条件写入复测后 | 已在提示后说出从 Location 取 URL；脱稿区分状态码和响应头，补浏览器后续请求，再串联完整流程 |
+| 1 | Day 3 / P10 / P18–P19 / E04–E05：短码取舍与碰撞 | 本次稍后换场景或下次复测 | S008 已自行答唯一索引、换盐重试及两命令间竞态；NX/EX 和 Lua/SET NX 适用范围经纠正后能答，仍需换场景独立验证 |
+| 2 | Day 3 / P13 / P17：API 与重定向流程 | 下次不看模板复测 | S008 首答将 301/302 与缓存混淆；模板后能说出永久/临时重定向、Location 及浏览器发起新请求，尚非独立证据 |
 | 3 | E01 / P07：范围表达 | 下次需求练习开头 | 不看答案，把 expiration 换成 analytics / custom aliases 仍能正确表达 |
 | 4 | E02 / P09：延迟句式与口径 | 下次学习 Day 2 时 | 独立说清请求类型、指标与测量边界，区分假设和已确认需求 |
 | 5 | E03 / P03–P05：短句衔接 | 下次需求口述 | 用完整短句连续总结需求，不依赖逐句提示 |
 | 6 | Day 4 / P14 / P11：扩展与共享瓶颈 | 下次扩展练习 | 独立解释无状态实例与负载均衡，并用指标区分应用 CPU 和数据库读瓶颈，说明对应方案与代价 |
-| 7 | Day 5 / P15：容量估算与验证 | 下次容量复述时 | 区分最低请求数、平均与峰值；独立计算原始存储，并解释不能仅凭 QPS 断言实例数量 |
+| 7 | Day 5 / P15：容量估算与验证 | 下次换数字复述时 | S008 独立算出约 1k 平均、5k 峰值 QPS；存储计算为模板后复述，需换数字独立计算并解释容量开销与压测证据 |
 | 8 | Day 6 / P16：数据流与设计深挖 | 下次 Day 6 练习 | 独立追踪创建和重定向路径，说明消息队列不是必选项，并提出容量之外的具体深挖点 |
+| 9 | Week 2 Day 3–4 / P20：TTL、expiration 与 eviction | Week 2 学到对应小节时 | S008 经提示区分 TTL 到期与内存上限淘汰；脱稿说明 TTL 依据及两者差异，避免把 NX 当作过期选项 |
 
 暂不设置自动提醒。完成一次后记录实际日期，按表现安排“下次练习 / 本周复盘 / 隔周抽查”。
 
@@ -303,6 +306,10 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 投递不以学完全部 50 个单元为前提。接近截止日期时，以真实面试反馈、目标岗位 P0 和在途流程为优先。
 
 ## 9. 最近练习记录
+
+### S008：Week 1 薄弱点口语复测（已收尾）
+
+练习及录入日期：2026-10-11；依据语音转写，时长未记录。自行答出唯一索引、换 salt 重试、两条 Redis 命令间竞态，以及约 1k 平均/5k 峰值 QPS。NX/EX 首答仍混淆，简单映射最初误选 Lua；纠正后能区分 SET NX 与 Lua。重定向首答将 301/302 与缓存混淆，分步提示后完整说出 Location 与浏览器新请求。存储 182.5 GB/年为模板复述。TTL 取值、expiration 与 eviction 经提示能答。学习者自述有先中文后英文的转换延迟；后续采用关键词句块、同题三遍与隔天换场景复测。不依据转写评价发音。
 
 ### S007：URL Shortener 重定向与短码取舍口语练习（已收尾）
 
@@ -431,5 +438,6 @@ Session ID：S008（依次递增；同一次练习只更新一条）
 | 2026-10-09 | v0.12 | 收尾 S007；记录自行查重/唯一索引、提示并发问题后提出 Lua、NX 纠正后能答；更新快照、Day 3/6、P10/P17–P19、E04–E05 及复习项；补三到四个月阶段评估建议，保留独立验证缺口 |
 | 2026-10-09 | v0.13 | 按用户计划准备 Week 2 缓存/Redis 官方资料及明日并行安排；建议单独 W02 Notion 页面，尚未创建；Week 1 仍待验收，不新增学习完成项 |
 | 2026-10-09 | v0.14 | 按用户偏好补英文视频与核验章节；创建私人学习父页及 W02、移入 W01；记录中英混合表达与纠错偏好；仅准备资料和页面，未新增学习完成证据 |
+| 2026-10-11 | v0.15 | 收尾 S008：记录唯一约束、冲突重试与 QPS 独立证据；Redis 原子性、NX/EX、Lua/SET NX、重定向、存储及 TTL/淘汰按提示程度更新；新增 P20，并将关键词句块、同题三遍、隔天迁移和短时跟读记为长期训练与材料选择参考 |
 
 初始来源：当前求职目标与学习偏好；已有全程周计划；`backend-week1-prompt.md`；`backend-week1-day1-chat-prompt.md`；已有 Day 1 与口语练习摘要。练习指令只作为计划来源，不作为完成证据。新练习优先用当次可观察的表现更新。
