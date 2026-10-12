@@ -2,7 +2,7 @@
 
 目标：2027 年 9 月前拿到外企或国际化技术公司的 Backend / Senior Backend / Platform Engineer offer。
 
-文档版本：v0.20 · 整理日期：2026-10-13 · 状态：持续更新。
+文档版本：v0.21 · 整理日期：2026-10-13 · 状态：持续更新。
 
 本文件是跨对话使用的学习记录。整理日期不代表练习日期；计划、建议表达和实际完成情况分开记录。每次使用最新版。
 
@@ -13,12 +13,12 @@ Notion 笔记：[W01 · System Design Basics · 系统设计基础](https://www.
 | 项目 | 当前记录 |
 |---|---|
 | 当前模块 | Week 1：System Design Basics 待复测；Week 2：Cache / Redis 基础进行中，已学习 Day 1–3 |
-| 已知进度 | Week 1 已核对 Notion Day 1–6 并完成 S008；Week 2 用户自述 Day 1–3 已学习，实读 Day 1、3 英文原文并完成反馈，Day 2 暂无独立表达；10-12 S010 口语复测能正确区分 SET NX 与 Lua，重定向流程为示例后复述，听力专项未验收 |
+| 已知进度 | Week 1 已核对 Notion Day 1–6 并完成 S008；Week 2 用户自述 Day 1–3 已学习，Day 2 暂无独立表达；10-13 S011 能独立讲出重定向基本流程，并在支付回调场景自行选择订单 ID 与 SET NX，Lua 风险解释仍依赖示范 |
 | 尚未确认 | Week 1 遗留项与完整设计；Week 2 Day 1 Cache-Aside 完整流程、Day 2 五种数据类型场景及 Day 3 NX/EX 的独立口述；各日学习时长未确认 |
-| 已有口语证据 | S010 不看完整示范说出 SET NX 仅在键不存在时写入、Lua 用于多步骤原子执行；同一短链接场景下已答对，换场景迁移仍待验证。短码创建与重定向在示例后能复述主干，未独立覆盖 Location 与浏览器新请求 |
-| 当前难点 | 能理解内容，但英语输出不够顺畅；atomically / asynchronously 需要拆分跟读；第三人称单数的 uses / looks up / returns 容易漏；需求总结容易断开 |
-| 下一项技术任务 | 换非短链接场景复测 NX/EX、SET NX 与 Lua；再脱稿串联短链接创建和完整重定向流程；容量补峰值与存储开销 |
-| 下一项口语任务 | 不看模板复述 301/302、Location 与浏览器新请求，并使用 uses / looks up / returns；之后换场景复用 atomically |
+| 已有口语证据 | S011 独立说出服务器把原始 URL 放入响应头、返回 301/302、浏览器再次请求；尚未独立说出 Location 名称和状态码取舍。支付回调场景自行提出订单 ID、SET NX 及键不存在时写入；Lua、partial updates 与 double processing 为示范后复述 |
+| 当前难点 | 能理解技术主线，但完整短句仍需压缩；第三人称单数、冠词和固定搭配容易漏；atomically 能在跟读后说出，换场景自然使用仍待验证 |
+| 下一项技术任务 | 不看模板解释支付回调中 SET NX 与 Lua 的职责边界，再换一个非短链接场景复测 NX/EX；随后补容量开销 |
+| 下一项口语任务 | 明早先用两句完整回答支付回调题，使用 processed only once、change together、partial updates / double processing；再明确说出 Location header |
 | 下一项文字学习 | 不看参考答案，用 “X is useful for ... / X stores ...” 为 String、Hash、List、Set、Sorted Set 各写一句；完成后进入 Week 2 Day 4 |
 | 下次复习 | 优先复述 Week 2 Day 2 数据类型场景，再复测 Cache-Aside、NX/EX 与 expiration/eviction；Week 1 保留重定向和完整设计遗留项 |
 | 本周验收 | 35 分钟英文 URL Shortener 模拟面试；目前未记录完成 |
@@ -166,8 +166,8 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 |---|---|---|---|
 | 需求与范围 | 09-28 笔记列出创建与重定向；方向表述需修正，范围和澄清问题缺失；独立解释未验证 | 有英文书面要点；历史口语片段保留，连贯口述待验证 | 补范围与澄清问题，再脱稿讲 60–90 秒 |
 | 性能指标 | 09-28 笔记将 200 ms 关联重定向，但缺分位数与边界；用户/URL 总量不等于 QPS；独立解释未验证 | 笔记“low latency on redict under 200 miliseconds”已有简短要点，尚无口述证据 | 先补延迟口径与边界，再解释吞吐/并发及规模与流量区别 |
-| API 与请求流程 | S008 经分步提示后能说明 Location 与浏览器新请求；S010 在示例后复述生成短码、SET NX、查询、301 与异步统计，但未独立覆盖 Location、浏览器新请求及状态码取舍。数据字段和无效短码仍未验收 | 示例后能使用 generates / looks up / response code / asynchronously；现场仍出现 use、look up、return 的第三人称单数遗漏，不依据转写评价发音 | 不看模板串联完整流程；再补 301/302 取舍、数据字段和无效短码行为 |
-| 短码生成与取舍 | S008 自行答出唯一索引、换 salt、竞态及 Lua 合并执行；S010 不看完整示范正确说明 SET NX 仅在键不存在时写入、Lua 用于多步骤原子执行。同一短链接场景已复测正确，NX/EX 与换场景迁移仍待验证 | 首答把 atomic / atomically 说成 automatic，经单词与整句跟读后能在句中说出 atomically；技术句意可独立表达，流畅度仍需复测 | 换非短链接场景脱稿区分 NX/EX 与 Lua/SET NX；独立表达条件分支，并确认 atomically 可自然使用 |
+| API 与请求流程 | S011 不看模板说出服务器把原始 URL 放入响应头、返回 301/302、浏览器请求原始 URL，基本流程独立完成；未明确使用 Location 名称，也未说明 301/302 取舍。数据字段和无效短码仍未验收 | 能连续表达主干；转写出现 orange URL，不据此判断发音，只继续固定术语 original URL。第三人称单数与句子连接仍需复测 | 明确使用 Location header 复述一次；再补 301/302 取舍、数据字段和无效短码行为 |
+| 短码生成与取舍 | S011 在优惠券场景经示范完成 SET NX / Lua 复述；支付回调场景自行提出订单 ID 作为 key、SET NX 及键不存在时写入。余额与状态要共同更新、部分更新和重复处理风险为示范后复述，仍未独立解释 | 能使用 order ID as the key、does not already exist；processed only once、partial updates、double processing 与 atomically 在示范后可复述，完整句仍需提示 | 明早不看模板完整回答支付回调题，再换新场景区分 NX/EX 与 Lua/SET NX |
 | 容量估算 | S008 口述得出 1 亿请求/天约 1k 平均 QPS、五倍峰值约 5k QPS，结果独立正确，秒数表述经提示修正；存储题由教练给出 100 万新增/天、500 B/条约 182.5 GB/年的答案后完整复述 | 能使用 average QPS / peak QPS；ten to the fifth、one thousand 及 five times the average 经纠正，存储表达属模板复述 | 换一组数据独立计算峰值与原始存储；补索引、副本、备份及数据库开销，并说明单机结论需要压测证据 |
 | 扩展与瓶颈 | 10-07 原文正确区分单机增加 CPU/内存与增加服务器，提及 Redis 缓存和副本；未说明多实例请求分配、共享状态、瓶颈与取舍；独立解释未验证 | 有英文书面短段；scaling 词形及 can 后动词形式需修正，口述未验证 | 解释增加应用实例为何不能直接消除数据库瓶颈，再按指标分析两个候选瓶颈 |
 | 技术取舍 / 项目迁移 | 10-08 笔记列出四步框架，但 data flow 仅提消息队列、deep dive 仅提容量，概念范围待澄清；具体设计与真实项目证据未提供 | 有英文框架段落；独立口述未验证 | 先追踪具体请求的数据流，再讲瓶颈/故障和一个真实项目案例 |
@@ -187,7 +187,7 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 | E03 | “The system can create a short URL ...” 后续需求衔接断开 | 先说完整短句，再分别说明重定向、读写特点与范围 | 用 4 个短句独立完成一段需求总结 |
 | E04 | S007：“use new short code ... find in the database, by index” | “I would look up the new short code in the database using an index.” | 用 look up 描述一次其他数据查询；本句为教练修正，待独立复用 |
 | E05 | S007：“If I use database, I will set unique index.” | “I would create a unique index in the database.” | a unique index 的冠词及 create 的搭配；修正句待复述 |
-| E06 | S010：“the service ... use SET NX”; “it look up ... return” | “The service uses SET NX.” / “It looks up the code and returns a 301 response.” | 用另一个服务流程复测 uses / looks up / returns，避免第三人称单数遗漏 |
+| E06 | S010：“the service ... use SET NX”；S011：“the server will put ... and return” | “The service uses SET NX.” / “The server puts the URL in the Location header and returns a 301 response.” | 用另一个服务流程复测 uses / puts / returns，避免第三人称单数遗漏 |
 
 E02 的最小修改只修正英语，并未让需求变得足够精确。技术补充示例：若双方明确接受 p99、重定向 API、服务器侧处理这三个条件，可以说 “For the redirect API, server-side p99 latency should be below 200 milliseconds.” 这些条件是新增练习假设，不是原回答中已确认的信息。
 
@@ -221,9 +221,9 @@ E02 的最小修改只修正英语，并未让需求变得足够精确。技术�
 | P14 | 描述扩展方式 | “We can scale vertically by adding CPU capacity and memory, or horizontally by adding more servers.” | 待首次使用；下次换用 RTA 服务说明两种扩展方式，检验能否独立表达 |
 | P15 | 容量估算与假设 | “Assuming [N] requests per day, the average request rate is about [Q] requests per second.” | S008 独立算出约 1k 平均、5k 峰值 QPS；标准句式经提示。下次换一组数据独立表达并计算存储 |
 | P16 | 引入设计深挖 | “I would dive deeper into [bottleneck] and explain the trade-offs.” | 待首次使用；原文用 dive into 作为步骤名；下次换一个瓶颈复述，区分 deep dives 与 dive into |
-| P17 | 从响应头读取信息 | “The browser gets the original URL from the Location header in the server's response.” | 提示后可用（相关句意）；gets 及所属关系需修正，完整模板待独立使用；下次换为客户端读取 Retry-After 时复习 |
-| P18 | 说明原子操作 | “I would use a Lua script to execute the read and write operations atomically.” | S010 不看完整示范说明多步骤用 Lua 保持原子性；atomically 经拆词和整句跟读后能说出，同场景技术区分正确，换库存场景与自然使用待验证 |
-| P19 | 描述条件与处理 | “If [condition], I would [action].” / “I would write the key only if it doesn't already exist.” | S010 独立正确说出 “SET NX sets the key only if it doesn't exist.”；同一短链接场景复测通过，仍需换缓存未命中场景验证迁移 |
+| P17 | 从响应头读取信息 | “The browser gets the original URL from the Location header in the server's response.” | S011 独立说出服务器把原始 URL 放入响应头、浏览器再次请求，但未说出 Location 名称；下次明确使用完整模板，再换 Retry-After 验证迁移 |
+| P18 | 说明原子操作 | “I would use a Lua script to execute the read and write operations atomically.” | S011 在优惠券与支付场景经示范复述 Lua 的多步骤用途、partial updates / double processing；atomically 可跟读，完整理由仍待脱稿验证 |
+| P19 | 描述条件与处理 | “If [condition], I would [action].” / “I would write the key only if it doesn't already exist.” | S011 支付回调场景自行提出订单 ID、SET NX 及键不存在时写入；句式经压缩后可复述，下一次不看模板验证 processed only once |
 | P20 | 区分过期与淘汰 | “Expiration removes keys when their TTL expires. Eviction removes keys according to an eviction policy when Redis reaches its memory limit.” | S008 自行区分 TTL 到期与内存满后移除；expires / remove / eviction policy 经提示，待换场景独立复述 |
 
 S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I use Lua script ... and use set NX, command”，NX 记提示后能答，不视为独立掌握。EX 设置过期秒数，NX 仅在键不存在时写入；最小表达为“I would use SET with the NX option.”。Lua 也可实现条件写入；若表达两种可选方案，用 or 代替 and，该简单场景不必组合使用。脚本分支与冲突重试待验证。[Redis SET 官方文档](https://redis.io/docs/latest/commands/set/)、[Lua 原子执行说明](https://redis.io/docs/latest/develop/programmability/eval-intro/)
@@ -232,8 +232,8 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 
 | 优先顺序 | 内容 | 复习触发条件 | 通过的证据 |
 |---|---|---|---|
-| 1 | Day 3 / P10 / P18–P19 / E04–E05：短码取舍与碰撞 | 下次换非短链接场景复测 | S010 已在同一短链接场景独立说对 SET NX 的条件及 Lua 的多步骤用途；NX/EX、取舍理由与迁移仍待验证，atomically 流畅度待巩固 |
-| 2 | Day 3 / P13 / P17 / E06：API 与重定向流程 | 下次不看模板复测 | S010 在示例后复述创建、查询、301 与异步统计，仍未独立覆盖 Location 与浏览器新请求；uses / looks up / returns 待复测 |
+| 1 | Day 3 / P10 / P18–P19 / E04–E05：条件写入与多步骤原子性 | 明早先复述支付回调，再换新场景 | S011 已把 SET NX 迁移到支付回调并自行给出订单 ID 与条件写入；Lua、部分更新和重复处理风险仍是示范后复述，NX/EX 仍待复测 |
+| 2 | Day 3 / P13 / P17 / E06：API 与重定向流程 | 下次明确使用 Location 复测 | S011 已独立覆盖响应头、301/302 与浏览器再次请求；Location 名称、状态码取舍及 puts / returns 仍待验证 |
 | 3 | E01 / P07：范围表达 | 下次需求练习开头 | 不看答案，把 expiration 换成 analytics / custom aliases 仍能正确表达 |
 | 4 | E02 / P09：延迟句式与口径 | 下次学习 Day 2 时 | 独立说清请求类型、指标与测量边界，区分假设和已确认需求 |
 | 5 | E03 / P03–P05：短句衔接 | 下次需求口述 | 用完整短句连续总结需求，不依赖逐句提示 |
@@ -315,6 +315,10 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 投递不以学完全部 50 个单元为前提。接近截止日期时，以真实面试反馈、目标岗位 P0 和在途流程为优先。
 
 ## 9. 最近练习记录
+
+### S011：重定向与 SET NX / Lua 场景迁移（已收尾）
+
+练习及录入日期：2026-10-13；依据本会话语音转写，实际时长未记录。独立说出服务器在响应头放原始 URL、返回 301/302、浏览器再次请求，未明确说 Location 或状态码取舍。优惠券题在示例后完成；支付回调题自行提出订单 ID、SET NX 及键不存在时写入，Lua、partial updates 和 double processing 在示范后复述。英语重点为第三人称单数、as the key、processed only once 与 atomically；不据转写评价发音。Notion 已整理 5 条表达并勾选 W02 Day 3 跟读，脱稿复述未勾。明早先不看模板完整回答支付回调题。
 
 ### S010：SET NX / Lua 与重定向口语复测（已收尾）
 
@@ -463,5 +467,6 @@ Session ID：S010（依次递增；同一次练习只更新一条）
 | 2026-10-11 | v0.18 | 按用户要求为 W02 Day 1–7 增加“跟读”和“脱稿复述”选做复选框，并将其设为后续 Week 页面固定格式；默认不勾选，不新增练习完成证据 |
 | 2026-10-12 | v0.19 | 收尾 S010：记录 SET NX / Lua 同场景独立复测、atomic / atomically 与 asynchronously 跟读、重定向示例后复述及第三人称单数问题；听力专项未验收，更新快照、能力证据、表达与复习队列 |
 | 2026-10-13 | v0.20 | 记录日常口语练习延长至 30–60 分钟的计划，并新增表达分层规则：Notion 每次保留 3–5 条重点表达，Markdown 只维护核心活跃表达、证据与复习触发条件；不把计划时长记为实际投入 |
+| 2026-10-13 | v0.21 | 收尾 S011：记录重定向流程独立证据、优惠券与支付回调场景迁移及提示程度；更新 P17–P19、E06 与复习队列；Notion 整理 5 条重点表达并勾选 W02 Day 3 跟读，保留脱稿复述待验证 |
 
 初始来源：当前求职目标与学习偏好；已有全程周计划；`backend-week1-prompt.md`；`backend-week1-day1-chat-prompt.md`；已有 Day 1 与口语练习摘要。练习指令只作为计划来源，不作为完成证据。新练习优先用当次可观察的表现更新。
