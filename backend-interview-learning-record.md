@@ -2,7 +2,7 @@
 
 目标：2027 年 9 月前拿到外企或国际化技术公司的 Backend / Senior Backend / Platform Engineer offer。
 
-文档版本：v0.24 · 整理日期：2026-10-13 · 状态：持续更新。
+文档版本：v0.25 · 整理日期：2026-10-14 · 状态：持续更新。
 
 本文件是跨对话使用的学习记录。整理日期不代表练习日期；计划、建议表达和实际完成情况分开记录。每次使用最新版。
 
@@ -13,12 +13,12 @@ Notion 笔记：[W01 · System Design Basics · 系统设计基础](https://www.
 | 项目 | 当前记录 |
 |---|---|
 | 当前模块 | Week 1：System Design Basics 待复测；Week 2：Cache / Redis 基础进行中，Week 3 页面已提前准备但尚未开展 |
-| 已知进度 | Week 1 已核对 Notion Day 1–6 并完成 S008；Week 2 用户自述英文视频已听完、官方文档还剩两篇，Day 1–3 已学习但 Day 2 暂无独立表达；10-13 S012 能独立选择订单 ID + SET NX，并说明余额与状态共同更新时使用 Lua |
+| 已知进度 | Week 1 已核对 Notion Day 1–6 并完成 S008；Week 2 用户自述英文视频已听完、官方文档还剩两篇，Day 1–3 已学习但 Day 2 暂无独立表达；10-14 S013 能自行提出 processing key 不存在时重试、存在时等待，以及 SET NX / Lua 两种并发控制方向 |
 | 尚未确认 | Week 1 遗留项与完整设计；Week 2 剩余两篇文档的具体名称、Day 1 Cache-Aside 完整流程、Day 2 五种数据类型场景及 Day 3 NX/EX 的独立口述；各日学习时长未确认 |
-| 已有口语证据 | S012 不看模板说明 SET NX 保证一次处理、Lua 让余额与状态原子更新，并在纠正后完整说出 partial updates 风险；永久标记导致崩溃后无法重试、processing + TTL + completed 的恢复流程为关键词提示后完成 |
-| 当前难点 | 技术主线能用短句表达，但冠词、动词形式及固定搭配仍会漏；atomically、partial updates 可在纠正后复述，expired / expiration 与状态转换仍需独立复用 |
-| 下一项技术任务 | 不看模板复述 processing + TTL + completed 的崩溃恢复流程，再换一个非支付场景复测 NX/EX；随后补容量开销 |
-| 下一项口语任务 | 下次先用两句完整回答崩溃后的重试策略，使用 has expired、retry the work、mark it as completed；再明确说出 Location header |
+| 已有口语证据 | S013 自行区分 processing key 不存在时重试、存在时等待，并提出 SET NX 与 Lua；TTL / lease 到期恢复经提示补全。锁的 key/value 仍混淆，hot key 的本地缓存方案在提示后完成 |
+| 当前难点 | 技术主线能用短句表达，但冠词、动词形式及固定搭配仍会漏；需要稳定区分 resource ID as the key 与 unique worker token as the value，并自然使用 expires / let it expire |
+| 下一项技术任务 | 用资源 ID 作锁 key、唯一 worker token 作 value，说明 SET NX 获取及 Lua compare-and-delete 安全释放；再脱稿解释本地缓存如何缓解 hot key |
+| 下一项口语任务 | 下次先用三句回答锁的获取、崩溃恢复和安全释放，使用 acquires the lock、has expired、only the owner can release it；再明确说出 Location header |
 | 下一项文字学习 | 不看参考答案，用 “X is useful for ... / X stores ...” 为 String、Hash、List、Set、Sorted Set 各写一句；完成后进入 Week 2 Day 4 |
 | 下次复习 | 优先复述 Week 2 Day 2 数据类型场景，再复测 Cache-Aside、NX/EX 与 expiration/eviction；Week 1 保留重定向和完整设计遗留项 |
 | 本周验收 | 35 分钟英文 URL Shortener 模拟面试；目前未记录完成 |
@@ -193,6 +193,7 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 | E05 | S007：“If I use database, I will set unique index.” | “I would create a unique index in the database.” | a unique index 的冠词及 create 的搭配；修正句待复述 |
 | E06 | S010：“the service ... use SET NX”；S011：“the server will put ... and return” | “The service uses SET NX.” / “The server puts the URL in the Location header and returns a 301 response.” | 用另一个服务流程复测 uses / puts / returns，避免第三人称单数遗漏 |
 | E07 | S012：“atomicly”“partitial updates”“out of expiration”“expirate” | “atomically” / “partial updates” / “has expired” | 下次不用示范，完整说出 processing key 到期后的重试流程 |
+| E08 | S013：“two staples”“or expires it”“with worker ID as a key” | “two steps” / “let it expire” / “use the resource ID as the key and a unique worker token as the value” | 用新场景独立说明锁的 key/value 与安全释放 |
 
 E02 的最小修改只修正英语，并未让需求变得足够精确。技术补充示例：若双方明确接受 p99、重定向 API、服务器侧处理这三个条件，可以说 “For the redirect API, server-side p99 latency should be below 200 milliseconds.” 这些条件是新增练习假设，不是原回答中已确认的信息。
 
@@ -227,8 +228,8 @@ E02 的最小修改只修正英语，并未让需求变得足够精确。技术�
 | P15 | 容量估算与假设 | “Assuming [N] requests per day, the average request rate is about [Q] requests per second.” | S008 独立算出约 1k 平均、5k 峰值 QPS；标准句式经提示。下次换一组数据独立表达并计算存储 |
 | P16 | 引入设计深挖 | “I would dive deeper into [bottleneck] and explain the trade-offs.” | 待首次使用；原文用 dive into 作为步骤名；下次换一个瓶颈复述，区分 deep dives 与 dive into |
 | P17 | 从响应头读取信息 | “The browser gets the original URL from the Location header in the server's response.” | S011 独立说出服务器把原始 URL 放入响应头、浏览器再次请求，但未说出 Location 名称；下次明确使用完整模板，再换 Retry-After 验证迁移 |
-| P18 | 说明原子操作 | “I would use a Lua script to execute the read and write operations atomically.” | S012 独立选择 Lua 让余额与状态共同原子更新；atomically 词形经纠正，partial updates 风险在修正后完整复述；下次换场景验证迁移 |
-| P19 | 描述条件与处理 | “If [condition], I would [action].” / “I would write the key only if it doesn't already exist.” | S012 独立用订单 ID + SET NX 说明一次处理；经提示后能说“If the processing key has expired, I'd retry the work. After success, I'd mark it as completed.”，崩溃恢复句式待脱稿复测 |
+| P18 | 说明原子操作 | “I would use a Lua script to execute the read and write operations atomically.” | S013 在要求第二种并发方案时自行提出 Lua 做 atomic check-and-set；steps 词形经纠正，锁释放的 compare-and-delete 仍待验证 |
+| P19 | 描述条件与处理 | “If [condition], I would [action].” / “I would write the key only if it doesn't already exist.” | S013 自行说明 key 不存在时重试、存在时等待；经提示后补出让 processing key 到期或清理再重试。SET NX 方向正确，但误把 worker ID 作为 key，需改为资源 ID 作 key、唯一 token 作 value |
 | P20 | 区分过期与淘汰 | “Expiration removes keys when their TTL expires. Eviction removes keys according to an eviction policy when Redis reaches its memory limit.” | S008 自行区分 TTL 到期与内存满后移除；expires / remove / eviction policy 经提示，待换场景独立复述 |
 
 S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I use Lua script ... and use set NX, command”，NX 记提示后能答，不视为独立掌握。EX 设置过期秒数，NX 仅在键不存在时写入；最小表达为“I would use SET with the NX option.”。Lua 也可实现条件写入；若表达两种可选方案，用 or 代替 and，该简单场景不必组合使用。脚本分支与冲突重试待验证。[Redis SET 官方文档](https://redis.io/docs/latest/commands/set/)、[Lua 原子执行说明](https://redis.io/docs/latest/develop/programmability/eval-intro/)
@@ -237,7 +238,7 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 
 | 优先顺序 | 内容 | 复习触发条件 | 通过的证据 |
 |---|---|---|---|
-| 1 | Day 3 / P10 / P18–P19 / E04–E05 / E07：条件写入、多步骤原子性与崩溃恢复 | 下次先脱稿复述 processing + TTL + completed，再换新场景 | S012 已独立区分支付回调中 SET NX 与 Lua 的职责，并在纠正后说明 partial updates；永久标记风险及崩溃恢复流程为关键词提示后完成，仍待独立复测 |
+| 1 | Day 3 / P10 / P18–P19 / E04–E05 / E07–E08：条件写入、原子性与崩溃恢复 | 下次用资源 ID + token 复述锁的获取、到期恢复与安全释放 | S013 已自行提出重试/等待、SET NX 与 Lua；TTL 到期恢复为提示后完成，锁的 key/value 仍混淆，compare-and-delete 尚未验证 |
 | 2 | Day 3 / P13 / P17 / E06：API 与重定向流程 | 下次明确使用 Location 复测 | S011 已独立覆盖响应头、301/302 与浏览器再次请求；Location 名称、状态码取舍及 puts / returns 仍待验证 |
 | 3 | E01 / P07：范围表达 | 下次需求练习开头 | 不看答案，把 expiration 换成 analytics / custom aliases 仍能正确表达 |
 | 4 | E02 / P09：延迟句式与口径 | 下次学习 Day 2 时 | 独立说清请求类型、指标与测量边界，区分假设和已确认需求 |
@@ -320,6 +321,10 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 投递不以学完全部 50 个单元为前提。接近截止日期时，以真实面试反馈、目标岗位 P0 和在途流程为优先。
 
 ## 9. 最近练习记录
+
+### S013：崩溃恢复、并发控制与 Hot Key 预练（已收尾）
+
+练习及录入日期：2026-10-14；依据本会话语音转写，实际时长未记录。自行说明 processing key 不存在时重试、存在时等待，完成后设置成功状态；TTL / lease 到期后的恢复经提示补全并复述。并发题自行提出 SET NX 与 Lua atomic check-and-set，但误把 worker ID 作为 key，后续需改为资源 ID 作 key、唯一 token 作 value。Hot key 初答不清，经提示后能说明本地缓存吸收请求、减少直达热点 key。英语重点为 steps、let it expire 和 fewer requests reach the hot key；不据转写评价发音。W03 仅记录预练表达，仍未标为开展。
 
 ### S012：支付回调幂等与崩溃恢复（已收尾）
 
@@ -480,5 +485,6 @@ Session ID：S010（依次递增；同一次练习只更新一条）
 | 2026-10-13 | v0.22 | 收尾 S012：记录支付回调中 SET NX / Lua 的独立回答、partial updates 纠正后复述及崩溃恢复提示后完成；更新快照、E07、P19 与复习队列；同步整理 W02 重点表达与口语练习状态 |
 | 2026-10-13 | v0.23 | 提炼后续口语节奏：约 70% 拓宽 P0、30% 间隔复习与定点深入；记录单点推进标准及 Week 2 覆盖顺序，复杂状态机与一致性留到 Week 3；本次仅更新策略，不新增学习完成证据 |
 | 2026-10-13 | v0.24 | 记录 Week 2 视频已听完、文档还剩两篇的用户自述；按既有固定结构在同一 Notion 父页面下创建 W03，加入已核验视频、官方资料、Day 1–7 骨架及 Day 1 验收标准；Week 3 仍标为待开展 |
+| 2026-10-14 | v0.25 | 收尾 S013：记录崩溃恢复、SET NX / Lua 与 hot key 预练的独立程度和提示点；纠正锁的 key/value、steps 与 let it expire；W03 整理 4 条表达但不升级 Week 3 状态 |
 
 初始来源：当前求职目标与学习偏好；已有全程周计划；`backend-week1-prompt.md`；`backend-week1-day1-chat-prompt.md`；已有 Day 1 与口语练习摘要。练习指令只作为计划来源，不作为完成证据。新练习优先用当次可观察的表现更新。
