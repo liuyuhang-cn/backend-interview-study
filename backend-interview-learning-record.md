@@ -2,7 +2,7 @@
 
 目标：2027 年 9 月前拿到外企或国际化技术公司的 Backend / Senior Backend / Platform Engineer offer。
 
-文档版本：v0.26 · 整理日期：2026-10-14 · 状态：持续更新。
+文档版本：v0.27 · 整理日期：2026-10-14 · 状态：持续更新。
 
 本文件是跨对话使用的学习记录。整理日期不代表练习日期；计划、建议表达和实际完成情况分开记录。每次使用最新版。
 
@@ -14,15 +14,15 @@ Notion 生成习惯（2026-10-14 确认）：每周一页、拆到 Day 1–7；�
 
 | 项目 | 当前记录 |
 |---|---|
-| 当前模块 | Week 1：System Design Basics 待复测；Week 2：Cache / Redis 基础进行中，Week 3 页面已提前准备但尚未开展 |
-| 已知进度 | Week 1 已核对 Notion Day 1–6 并完成 S008；Week 2 用户自述英文视频已听完、官方文档还剩两篇，Day 1–3 已学习但 Day 2 暂无独立表达；10-14 S013 能自行提出 processing key 不存在时重试、存在时等待，以及 SET NX / Lua 两种并发控制方向 |
+| 当前模块 | Week 3：Cache / Redis 进阶已开展，Day 1 写作已核对、独立解释待验证；Week 1 待复测，Week 2 遗留项保留 |
+| 已知进度 | Week 1 已核对 Day 1–6 并完成 S008；Week 2 视频已听完、文档还剩两篇为用户自述，Day 2 暂无本人表达；10-14 S014 核对 W03 Day 1 原文，写出缓存未命中回源回填、数据库更新后缓存陈旧及删除/TTL 方向 |
 | 尚未确认 | Week 1 遗留项与完整设计；Week 2 剩余两篇文档的具体名称、Day 1 Cache-Aside 完整流程、Day 2 五种数据类型场景及 Day 3 NX/EX 的独立口述；各日学习时长未确认 |
 | 已有口语证据 | S013 自行区分 processing key 不存在时重试、存在时等待，并提出 SET NX 与 Lua；TTL / lease 到期恢复经提示补全。锁的 key/value 仍混淆，hot key 的本地缓存方案在提示后完成 |
-| 当前难点 | 技术主线能用短句表达，但冠词、动词形式及固定搭配仍会漏；需要稳定区分 resource ID as the key 与 unique worker token as the value，并自然使用 expires / let it expire |
-| 下一项技术任务 | 用资源 ID 作锁 key、唯一 worker token 作 value，说明 SET NX 获取及 Lua compare-and-delete 安全释放；再脱稿解释本地缓存如何缓解 hot key |
-| 下一项口语任务 | 下次先用三句回答锁的获取、崩溃恢复和安全释放，使用 acquires the lock、has expired、only the owner can release it；再明确说出 Location header |
-| 下一项文字学习 | 不看参考答案，用 “X is useful for ... / X stores ...” 为 String、Hash、List、Set、Sorted Set 各写一句；完成后进入 Week 2 Day 4 |
-| 下次复习 | 优先复述 Week 2 Day 2 数据类型场景，再复测 Cache-Aside、NX/EX 与 expiration/eviction；Week 1 保留重定向和完整设计遗留项 |
+| 当前难点 | Day 1 需明确先更新数据库再删除缓存、TTL 与失效配合及新鲜度代价；When update / was staled 需改为完整从句与 become stale；锁的 resource ID / token 区分继续复习 |
+| 下一项技术任务 | 用三句解释 source of truth、数据库更新后的缓存失效及 TTL 的作用；P1 再用时间线说明旧值回填，锁安全释放仍在复习队列 |
+| 下一项口语任务 | 不看参考，用 60–90 秒解释 Day 1 写入流程与原因，正确使用 source of truth、stale data、invalidate the cache，再回答一轮核心追问 |
+| 下一项文字学习 | 先脱离参考补 Day 1 的三句核心解释，再进入 Week 3 Day 2；Week 2 五种数据类型独立表达及剩余文档继续保留 |
+| 下次复习 | 本次优先 Day 1 写入顺序与 TTL 边界；之后复测 Week 2 数据类型、NX/EX 与 expiration/eviction，保留锁、重定向及完整设计遗留项 |
 | 本周验收 | 35 分钟英文 URL Shortener 模拟面试；目前未记录完成 |
 
 如果学习者提供了更新的信息，先据此修订快照。不要根据日期自动推进到下一周。
@@ -164,6 +164,15 @@ Day 5 统一练习假设：每天新增 100 万条链接、每天 1 亿次重定
 
 Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://app.notion.com/p/3f362584108381748f79cf83d3f9d8d7)，并将 W01 移入、在同一父页面下创建 [W02 · Cache & Redis Basics · 缓存与 Redis 基础](https://app.notion.com/p/3f362584108381ff8ee7fab2e4c89f4d)。W02 依次包含数据类型选择、常用类型、TTL、淘汰、Cache-Aside 读写、案例应用和复盘。2026-10-11 已保留并排版 Day 1、3 原文，补标准英文与简评；Day 2 原文保持为空并补参考答案，等待学习者自行重写；Day 1–7 均已增加未勾选的“跟读”和“脱稿复述”，作为 Week 2 及以后页面的固定选做项。Day 4–7 其余骨架保留。
 
+### Week 3：Cache / Redis 进阶（进行中）
+
+2026-10-14 用户自述 Day 1 写作已完成，已实读并审核 [W03 · Cache & Redis Advanced · 缓存与 Redis 进阶](https://app.notion.com/p/3f86258410838121bf35ff4bb6156c33)。学习日期与时长未确认；本次仅核对书面产出，不将 Week 2 遗留项或 Week 3 整周标为完成。
+
+| Day | 本次执行状态与证据 | 下一步 |
+|---|---|---|
+| 1：缓存一致性与失效 | 已核对写作产出；查缓存、未命中回源回填及缓存陈旧的方向正确；写入顺序、TTL 边界与取舍需补，独立解释未验证 | 不看参考写三句：数据库权威、先更新数据库再失效缓存、TTL 作用与代价；再独立口述与追问 |
+| 2–7 | Notion 任务与参考范围已准备；尚无本次学习证据 | Day 1 核心补答后进入 Day 2，不据页面准备升级掌握状态 |
+
 ## 6. 当前能力证据
 
 2026-09-26 仅新增视频观看自述，无现场技术回答或口语验收，以下能力与表达状态不升级。
@@ -177,7 +186,8 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 | 容量估算 | S008 口述得出 1 亿请求/天约 1k 平均 QPS、五倍峰值约 5k QPS，结果独立正确，秒数表述经提示修正；存储题由教练给出 100 万新增/天、500 B/条约 182.5 GB/年的答案后完整复述 | 能使用 average QPS / peak QPS；ten to the fifth、one thousand 及 five times the average 经纠正，存储表达属模板复述 | 换一组数据独立计算峰值与原始存储；补索引、副本、备份及数据库开销，并说明单机结论需要压测证据 |
 | 扩展与瓶颈 | 10-07 原文正确区分单机增加 CPU/内存与增加服务器，提及 Redis 缓存和副本；未说明多实例请求分配、共享状态、瓶颈与取舍；独立解释未验证 | 有英文书面短段；scaling 词形及 can 后动词形式需修正，口述未验证 | 解释增加应用实例为何不能直接消除数据库瓶颈，再按指标分析两个候选瓶颈 |
 | 技术取舍 / 项目迁移 | 10-08 笔记列出四步框架，但 data flow 仅提消息队列、deep dive 仅提容量，概念范围待澄清；具体设计与真实项目证据未提供 | 有英文框架段落；独立口述未验证 | 先追踪具体请求的数据流，再讲瓶颈/故障和一个真实项目案例 |
-| 缓存数据类型与 Cache-Aside | 10-11 Day 1 书面选择 String 保存短码映射，方向正确；未写完整命中、未命中、回源和回填。Day 2 无本人原文，五种数据类型场景尚无掌握证据 | 能写 key/value 基本映射；`supplys`、数据类型句式及完整流程由参考答案修正，口述未验证 | 用统一短句为五种类型各举一例，再脱稿说明一次缓存命中与未命中流程 |
+| 缓存数据类型与 Cache-Aside | 10-11 选择 String 保存短码映射；S014 W03 Day 1 原文进一步写出查缓存、未命中回源回填并返回，读取主线正确，但未明确命中直接返回。五种数据类型场景仍无本人产出 | 能写 key/value 与读取流程；S014 长句需拆分，exist / cache 拼写需修正，独立口述未验证 | 脱稿补命中/未命中流程；保留五种数据类型各举一例的遗留任务 |
+| 缓存一致性与失效 | S014 书面认识到数据库更新会使缓存陈旧，提出删除缓存或短 TTL；尚未明确 source of truth、写入先后、TTL 新鲜度代价及更新/删除取舍，独立解释未验证 | 能用英文写出问题与处理方向；When update / was staled 需修正为完整从句与 become stale；参考答案为教练补充 | 独立解释先更新数据库再失效缓存、TTL 与失效配合，并用时间线说明一个旧值回填竞态 |
 | TTL 与 Redis 选项 | 10-11 Day 3 书面说明过期返回 nil、数据库回源及回填，方向正确；需明确缓存过期不等于业务链接失效，NX 控制条件写入、EX 设置秒级过期 | 已尝试英文说明 nil、数据库读取及响应变慢；时态、Redis 大小写及 response time 表达需修正，口述未验证 | 不看参考答案区分 NX/EX，并说明 TTL 到期后的读取路径和 expiration/eviction 差异 |
 
 ## 7. 口语纠错与可复用表达
@@ -196,6 +206,7 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 | E06 | S010：“the service ... use SET NX”；S011：“the server will put ... and return” | “The service uses SET NX.” / “The server puts the URL in the Location header and returns a 301 response.” | 用另一个服务流程复测 uses / puts / returns，避免第三人称单数遗漏 |
 | E07 | S012：“atomicly”“partitial updates”“out of expiration”“expirate” | “atomically” / “partial updates” / “has expired” | 下次不用示范，完整说出 processing key 到期后的重试流程 |
 | E08 | S013：“two staples”“or expires it”“with worker ID as a key” | “two steps” / “let it expire” / “use the resource ID as the key and a unique worker token as the value” | 用新场景独立说明锁的 key/value 与安全释放 |
+| E09 | S014 书面：“When update the data ... was staled”“does not exit”“cahce” | “When the data in the database is updated, the cached copy may become stale.” / “If the data is not in the cache ...” | stale 为形容词；下次换用户资料场景独立说明缓存陈旧，并检查 exist / cache 拼写 |
 
 E02 的最小修改只修正英语，并未让需求变得足够精确。技术补充示例：若双方明确接受 p99、重定向 API、服务器侧处理这三个条件，可以说 “For the redirect API, server-side p99 latency should be below 200 milliseconds.” 这些条件是新增练习假设，不是原回答中已确认的信息。
 
@@ -240,6 +251,7 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 
 | 优先顺序 | 内容 | 复习触发条件 | 通过的证据 |
 |---|---|---|---|
+| 本次优先 | Week 3 Day 1 / E09：缓存失效顺序与 TTL 边界 | Day 1 补答及下次口述开头 | 不看参考说清数据库权威、先更新数据库再失效缓存、TTL 与失效配合及回源代价；P1 用时间线指出旧值回填，现仅有书面方向证据 |
 | 1 | Day 3 / P10 / P18–P19 / E04–E05 / E07–E08：条件写入、原子性与崩溃恢复 | 下次用资源 ID + token 复述锁的获取、到期恢复与安全释放 | S013 已自行提出重试/等待、SET NX 与 Lua；TTL 到期恢复为提示后完成，锁的 key/value 仍混淆，compare-and-delete 尚未验证 |
 | 2 | Day 3 / P13 / P17 / E06：API 与重定向流程 | 下次明确使用 Location 复测 | S011 已独立覆盖响应头、301/302 与浏览器再次请求；Location 名称、状态码取舍及 puts / returns 仍待验证 |
 | 3 | E01 / P07：范围表达 | 下次需求练习开头 | 不看答案，把 expiration 换成 analytics / custom aliases 仍能正确表达 |
@@ -261,7 +273,7 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 |---|---|---|---|
 | 01 | System Design Basics | 需求、指标、估算、API、请求路径、扩展、权衡 | 进行中 |
 | 02 | Cache / Redis 基础 | 数据类型、TTL、淘汰、Cache-Aside | 进行中；Day 1、3 有部分书面产出，Day 2 待本人表达 |
-| 03 | Cache / Redis 进阶 | 一致性、穿透 / 击穿 / 雪崩、热 Key、原子操作与锁 | Notion 页面已准备；待开展 |
+| 03 | Cache / Redis 进阶 | 一致性、穿透 / 击穿 / 雪崩、热 Key、原子操作与锁 | 进行中；Day 1 写作已核对，独立解释及其余任务待验证 |
 | 04 | Database 基础 | 建模、SQL、索引、执行计划、慢查询 | 待开展 |
 | 05 | Database 进阶 | 事务、隔离、MVCC、锁、复制、读写分离、分片 | 待开展 |
 | 06 | Kafka / Message Queue | 分区、消费组、顺序、投递语义、重试、积压、死信 | 待开展 |
@@ -323,6 +335,10 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 投递不以学完全部 50 个单元为前提。接近截止日期时，以真实面试反馈、目标岗位 P0 和在途流程为优先。
 
 ## 9. 最近练习记录
+
+### S014：Week 3 Day 1 写作审核与原文排版（文字，已收尾）
+
+审核及录入日期：2026-10-14；用户自述写作已完成，实际学习日期与时长未确认。原文写出缓存未命中回源回填，认识数据库更新后缓存陈旧，并提出删除或短 TTL，方向正确。重点补先更新数据库再失效缓存、TTL 与失效配合及新鲜度代价；命中分支、source of truth 与并发竞态尚待本人补答。英语处理 When update / was staled、exist / cache，并拆分长句。Notion 仅调整原文换行，保留用词，另补英文修正与技术参考；口语选做未勾选。下次先不看参考写三句核心解释，再进入 Day 2。
 
 ### S013：崩溃恢复、并发控制与 Hot Key 预练（已收尾）
 
@@ -489,5 +505,6 @@ Session ID：S010（依次递增；同一次练习只更新一条）
 | 2026-10-13 | v0.24 | 记录 Week 2 视频已听完、文档还剩两篇的用户自述；按既有固定结构在同一 Notion 父页面下创建 W03，加入已核验视频、官方资料、Day 1–7 骨架及 Day 1 验收标准；Week 3 仍标为待开展 |
 | 2026-10-14 | v0.25 | 收尾 S013：记录崩溃恢复、SET NX / Lua 与 hot key 预练的独立程度和提示点；纠正锁的 key/value、steps 与 let it expire；W03 整理 4 条表达但不升级 Week 3 状态 |
 | 2026-10-14 | v0.26 | 按用户要求固定 Notion 周计划生成习惯：每周拆到 Day，各任务直接对应视频起止范围或文档章节；补充 W01–W03 共 21 个 Day 的任务与参考定位，沿用视频原核验状态、核对文档章节；更新 AGENTS.md，学习进度与 Session 不变 |
+| 2026-10-14 | v0.27 | 审核 W03 Day 1 写作并保留原文用词排版，分开补英文修正、技术补充与简评；记录 Cache-Aside 读取及缓存陈旧书面证据、E09、复习项和 S014；Week 3 改为进行中，口语及整周验收未完成 |
 
 初始来源：当前求职目标与学习偏好；已有全程周计划；`backend-week1-prompt.md`；`backend-week1-day1-chat-prompt.md`；已有 Day 1 与口语练习摘要。练习指令只作为计划来源，不作为完成证据。新练习优先用当次可观察的表现更新。
