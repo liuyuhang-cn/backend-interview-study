@@ -2,7 +2,7 @@
 
 目标：2027 年 9 月前拿到外企或国际化技术公司的 Backend / Senior Backend / Platform Engineer offer。
 
-文档版本：v0.33 · 整理日期：2026-10-24 · 状态：持续更新。
+文档版本：v0.34 · 整理日期：2026-10-24 · 状态：持续更新。
 
 本文件是跨对话使用的学习记录。整理日期不代表练习日期；计划、建议表达和实际完成情况分开记录。每次使用最新版。
 
@@ -16,15 +16,15 @@ Notion 生成习惯（2026-10-14 确认）：每周一页、拆到 Day 1–7；�
 
 | 项目 | 当前记录 |
 |---|---|
-| 当前模块 | Week 3：Cache / Redis 进阶进行中，Day 1–4 写作及 Day 3 补写已核对，独立解释待验证；Week 1 待复测，Week 2 遗留项保留 |
-| 已知进度 | Week 1 已核对 Day 1–6；Week 2 视频已听完、文档还剩两篇为此前自述，Day 2 暂无本人表达；10-24 S018 核对 W03 Day 4：提出错开过期时间和应用本地缓存，方向正确，单 key 击穿与大范围雪崩合写，故障保护路径待补 |
+| 当前模块 | Week 3：Cache / Redis 进阶进行中，Day 1–4 写作及 Day 3–4 补写已核对，独立解释待验证；Week 1 待复测，Week 2 遗留项保留 |
+| 已知进度 | Week 1 已核对 Day 1–6；Week 2 视频已听完、文档还剩两篇为此前自述，Day 2 暂无本人表达；10-24 S018 两轮核对 W03 Day 4，补版已新增 TTL offset、数据库回源限流与逐步预热，方案方向已补上，独立程度未确认 |
 | 尚未确认 | Week 1 遗留项与完整设计；Week 2 剩余两篇文档的具体名称、Day 1 Cache-Aside 完整流程、Day 2 五种数据类型场景及 Day 3 NX/EX 的独立口述；各日学习时长未确认 |
 | 已有口语证据 | S013 自行区分 processing key 不存在时重试、存在时等待，并提出 SET NX 与 Lua；TTL / lease 到期恢复经提示补全。锁的 key/value 仍混淆，hot key 的本地缓存方案在提示后完成 |
-| 当前难点 | Day 4 需区分单热点与大范围故障；TTL 分散不能修复缓存整体不可用，本地缓存未命中仍需限制数据库回源。英文重点为 cache stampede、expiration times 与 to prevent ... from ... |
-| 下一项技术任务 | 用两句区分本周的击穿/雪崩，再说明缓存整体故障时的限流、降级及本地缓存适用条件；取舍待独立解释 |
-| 下一项口语任务 | 用 Day 4 主问题解释如何保护数据库，再回答本地缓存未命中时怎么办；写作产出不替代口语验收 |
-| 下一项文字学习 | 先补单 key/大范围故障区别及一句回源限流，再继续 Day 5；Day 1–3 与 Week 2 遗留交替短复习 |
-| 下次复习 | 本次优先 Day 4 故障范围与保护路径；保留 Day 3 加载者/等待及旧值、Day 2 集合/缓存区别、Day 1 失效/TTL，以及锁和重定向遗留项 |
+| 当前难点 | TTL jitter 的偏移应因 key 而异，通常随机选择；相同到期时刻统一加相同偏移仍会同时过期。英文需明确 limit the rate of requests，when 从句有动词，recovery / recovers 分开使用 |
+| 下一项技术任务 | 继续 Day 5 热 Key；Day 4 的故障范围、随机偏移和限流代价保留为短复测，不把已写出的限流/预热方向继续记为缺失 |
+| 下一项口语任务 | 用 Day 4 主问题区分故障范围、解释随机偏移与数据库回源限制，再回答本地缓存未命中及代价；反馈后补写不替代独立口述 |
+| 下一项文字学习 | 可进入 Week 3 Day 5 热 Key；Day 1–4 与 Week 2 遗留交替短复习，不因推进文字任务认定先前 P0 已验收 |
+| 下次复习 | 优先 Day 4 随机偏移与回源限制，故障范围区分仍待纠正；保留 Day 3 加载者/等待及旧值、Day 2 集合/缓存区别、Day 1 失效/TTL，以及锁和重定向遗留项 |
 | 本周验收 | 35 分钟英文 URL Shortener 模拟面试；目前未记录完成 |
 
 如果学习者提供了更新的信息，先据此修订快照。不要根据日期自动推进到下一周。
@@ -175,8 +175,8 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 | 1：缓存一致性与失效 | 已核对写作产出；查缓存、未命中回源回填及缓存陈旧的方向正确；写入顺序、TTL 边界与取舍需补，独立解释未验证 | 不看参考写三句：数据库权威、先更新数据库再失效缓存、TTL 作用与代价；再独立口述与追问 |
 | 2：缓存穿透与不存在的数据 | 10-16 已核对写作产出；不存在数据持续查库的方向正确，Bloom filter 的集合成员关系仍误指缓存，技术掌握记有误解；negative caching 尚未本人表达 | 先独立重写阴性/阳性结果及判断对象，再补 not-found marker、短 TTL 与新数据可见性取舍；口述待验证 |
 | 3：缓存击穿 / Cache Stampede | 10-19 核对初稿，10-21 核对反馈后补写；已写出 loader 与其他请求轮询缓存，hold the key 表述需明确为 acquire the lock；查库/回填与等待/旧值取舍仍待本人补清，是否脱稿未确认 | 只补加载者查库回填一句，再继续 Day 4；正常路径、刷新术语及新鲜度取舍留待独立口述验证 |
-| 4：缓存雪崩与缓存故障 | 10-24 已核对写作产出；提出大量条目同时过期、错开过期及本地缓存，方向正确；本周单 key 击穿/大范围雪崩区分待澄清，缓存整体故障的限流/降级未写到，独立解释未验证 | 用两句区分影响范围，再补一句缓存不可用时的回源限制；核心补答后继续 Day 5 |
-| 5–7 | Notion 任务、参考范围与口语素材已准备；尚无对应学习完成证据 | Day 4 核心补答后继续 Day 5，不据页面准备升级掌握状态 |
+| 4：缓存雪崩与缓存故障 | 10-24 初稿及反馈后补版已核对；补版新增 TTL offset、限制数据库回源与逐步预热，方案方向已补上；故障范围混写、随机偏移及代价待独立复测，是否脱稿未确认 | 文字任务继续 Day 5；口语短复测影响范围、同偏移为何无效、本地缓存未命中及限流取舍，不升级独立掌握 |
+| 5–7 | Notion 任务、参考范围与口语素材已准备；尚无对应学习完成证据 | 下一项文字任务为 Day 5；Day 4 等遗留交替复习，不据页面准备升级掌握状态 |
 
 2026-10-16 更新：用户自述 Day 2 英文描述已写完，实读并审核；实际写作日期和时长未确认。已先保留全部原词与标点整理换行，再分开补英文润色、Bloom filter 技术纠正及 negative caching 参考。不据此认定已独立解释或口语通过。
 
@@ -185,6 +185,8 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 2026-10-21 更新：实读 Day 3 新增的加载者补写，确认已写出其他请求 poll the cache；保留原词排版并补 hold the key / acquire the lock 说明。此为前次参考后的书面补写，实际补写日期、时长与脱稿情况未确认；不升级独立解释或口语状态。
 
 2026-10-24 更新：用户自述 Day 4 书面书写已完成，实读原文并先保留措辞排版；补英文润色、故障范围纠正和缓存整体故障保护参考。实际写作日期、时长及独立口述未确认，限流/降级与取舍为教练补充，不记为本人掌握证据。
+
+同日补写审核：用户在前次反馈后新增 TTL offset、数据库回源限流与逐步预热，已核对书面方向，不再记为方案缺失；偏移随机性、原首段故障范围与措施代价仍待独立复测。沿用 S018 更新同一摘要，实际补写日期、时长及脱稿情况未明确。
 
 ## 6. 当前能力证据
 
@@ -203,7 +205,7 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 | 缓存一致性与失效 | S014 书面认识到数据库更新会使缓存陈旧，提出删除缓存或短 TTL；尚未明确 source of truth、写入先后、TTL 新鲜度代价及更新/删除取舍，独立解释未验证 | 能用英文写出问题与处理方向；When update / was staled 需修正为完整从句与 become stale；参考答案为教练补充 | 独立解释先更新数据库再失效缓存、TTL 与失效配合，并用时间线说明一个旧值回填竞态 |
 | 缓存穿透与 Bloom filter | S015 书面正确解释不存在数据造成重复查库；尝试“确定不存在 / 可能存在”但判断对象写成 cache，集合成员关系与缓存命中记有误解。negative caching 与短 TTL 方案为教练补充，独立解释未验证 | 能写出请求流程及 memory / accuracy 取舍方向；stores、trade-off between、may be 由反馈修正，未作口语验收 | 独立用两句说明过滤结果及集合对象，再说明 negative caching 的回源收益、新数据可见性代价与初始化/更新前提 |
 | 缓存击穿与请求合并 | S016 写出热点过期、仅一个请求重建及提前刷新；S017 在前次参考后补写 loader 与其他请求轮询缓存，等待者方向已补上，脱稿情况未确认。获取锁与加载者查库/回填未明确，等待/旧值取舍未验证 | 新增原句为 “the first request hold the key as the loader, other requests poll the cache and read it”；holds 与拆句为语言修正，key → lock、first → 获锁者为技术术语纠正，独立口述仍未验证 | 补一句加载者拿锁后的查库回填再继续 Day 4；后续换场景脱稿复测正常流程、新鲜度与旧副本前提，P1 超时边界暂缓 |
-| 缓存雪崩与故障保护 | S018 书面提出大量 key 一起过期、错开过期时间及应用本地缓存，方案方向正确；单热点与大范围故障在原文合写，按本周区分仍待澄清；整体缓存故障下回源限流/降级及取舍未本人表达 | 能写出不同过期时间与 local cache 的方向；cache stamped、expire times、in case of 从句由反馈修正，独立口述未验证 | 不看参考区分两个影响范围，并说明 TTL jitter、本地缓存未命中与数据库回源限制；补代价后再做追问验收 |
+| 缓存雪崩与故障保护 | S018 初稿有错开过期与本地缓存；反馈后补版写出 TTL offset、回源限流和逐步预热，方案方向已补上，是否脱稿未确认。单热点/大范围仍合写，随机偏移及整体缓存故障边界、取舍待独立验证 | 新增 “TTL jitter adds offset ...”“limit the rate of database”“when the cache recovery”；requests 作为限流对象及 recovers 从句经纠正，口述未验证 | 换场景独立区分影响范围，解释不同随机偏移、本地缓存未命中和数据库请求限流及代价；文字任务可继续 Day 5 |
 | TTL 与 Redis 选项 | 10-11 Day 3 书面说明过期返回 nil、数据库回源及回填，方向正确；需明确缓存过期不等于业务链接失效，NX 控制条件写入、EX 设置秒级过期 | 已尝试英文说明 nil、数据库读取及响应变慢；时态、Redis 大小写及 response time 表达需修正，口述未验证 | 不看参考答案区分 NX/EX，并说明 TTL 到期后的读取路径和 expiration/eviction 差异 |
 
 ## 7. 口语纠错与可复用表达
@@ -226,6 +228,7 @@ Notion 已按用户授权创建私人父页面 [Backend 面试学习](https://ap
 | E10 | S015 书面：“the trade-off on memory and accuracy”“it probably in the cache” | “a trade-off between memory usage and accuracy” / “It may be in the set.” | 下次换缓存 TTL 取舍复用 between A and B；技术纠正另记，不把 cache → set 当作纯语法替换 |
 | E11 | S016 书面：“Request coalescing is that When ...”“Cache warning ... before it is expired”；S017 补写 loader、poll the cache，仍用逗号连接完整句 | “With request coalescing, only one request rebuilds the cache.” / “We proactively refresh the cache before it expires.” / “The other requests poll the cache for the refreshed data.” | 已有反馈后补写的等待者方向，独立使用未验证；下次把加载者与等待者分成两句，保留刷新术语复习 |
 | E12 | S018 书面：“Cache stamped”“different expire times”“in case of many cache entries expire together” | “cache stampede” / “different expiration times” / “to prevent many entries from expiring at the same time” | 下次换一个预防故障场景使用 to prevent X from doing Y；stampede/avalanche 区分为单独技术纠正 |
+| E13 | S018 补版：“limit the rate of database”“when the cache stampede”“when the cache recovery” | “limit the rate of requests sent to the database” / “during a cache stampede” / “as the cache recovers” | 下次换依赖服务说明限制哪类请求；区分 during + 名词与 when/as + 有动词的从句，补版属反馈后产出 |
 
 E02 的最小修改只修正英语，并未让需求变得足够精确。技术补充示例：若双方明确接受 p99、重定向 API、服务器侧处理这三个条件，可以说 “For the redirect API, server-side p99 latency should be below 200 milliseconds.” 这些条件是新增练习假设，不是原回答中已确认的信息。
 
@@ -262,7 +265,7 @@ E02 的最小修改只修正英语，并未让需求变得足够精确。技术�
 | P17 | 从响应头读取信息 | “The browser gets the original URL from the Location header in the server's response.” | S011 独立说出服务器把原始 URL 放入响应头、浏览器再次请求，但未说出 Location 名称；下次明确使用完整模板，再换 Retry-After 验证迁移 |
 | P18 | 说明原子操作 | “I would use a Lua script to execute the read and write operations atomically.” | S013 在要求第二种并发方案时自行提出 Lua 做 atomic check-and-set；steps 词形经纠正，锁释放的 compare-and-delete 仍待验证 |
 | P19 | 描述条件与处理 | “If [condition], I would [action].” / “I would write the key only if it doesn't already exist.” | S013 自行说明 key 不存在时重试、存在时等待；经提示后补出让 processing key 到期或清理再重试。SET NX 方向正确，但误把 worker ID 作为 key，需改为资源 ID 作 key、唯一 token 作 value |
-| P20 | 说明过期策略、淘汰与刷新时机 | “Expiration removes keys when their TTL expires. Eviction removes keys according to an eviction policy when Redis reaches its memory limit.” / “refresh the cache before it expires” / “stagger expiration times” | S008 区分 TTL 到期与内存移除，语言经提示；S016 提出提前刷新，before it expires 为教练修正；S018 书面提出错开过期时间，stagger expiration times 为教练建议，均待换场景独立复用 |
+| P20 | 说明过期策略、淘汰与刷新时机 | “Expiration removes keys when their TTL expires. Eviction removes keys according to an eviction policy when Redis reaches its memory limit.” / “refresh the cache before it expires” / “stagger expiration times” | S008 区分 TTL 到期与内存移除，语言经提示；S016 提出提前刷新；S018 先提出错开过期，反馈后补写 TTL offset，但随机/各 key 不同尚未明确。before it expires / stagger expiration times 为教练建议，待换场景独立复用 |
 
 S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I use Lua script ... and use set NX, command”，NX 记提示后能答，不视为独立掌握。EX 设置过期秒数，NX 仅在键不存在时写入；最小表达为“I would use SET with the NX option.”。Lua 也可实现条件写入；若表达两种可选方案，用 or 代替 and，该简单场景不必组合使用。脚本分支与冲突重试待验证。[Redis SET 官方文档](https://redis.io/docs/latest/commands/set/)、[Lua 原子执行说明](https://redis.io/docs/latest/develop/programmability/eval-intro/)
 
@@ -270,7 +273,7 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 
 | 优先顺序 | 内容 | 复习触发条件 | 通过的证据 |
 |---|---|---|---|
-| 本次优先 | Week 3 Day 4 / E12 / P20：故障范围与数据库保护 | Day 4 补答及下一次口述开头 | 原文有分散过期和本地缓存方向；独立区分单热点/大范围故障，并解释缓存不可用时的回源限制、本地缓存未命中及代价 |
+| 本次优先 | Week 3 Day 4 / E12–E13 / P20：随机偏移、故障范围与数据库保护 | 文字进入 Day 5，Day 4 在下一次口语中短复测 | S018 补版已写限流与逐步预热；仍需独立区分单热点/大范围，解释不同随机偏移、整体缓存故障的回源限制和代价，未作口语验收 |
 | 随后复习 | Week 3 Day 3 / E06 / E11 / P20：加载者与等待者 | 与 Day 1–2 遗留交替短复测 | S017 在前次参考后补出轮询方向，脱稿未确认；独立说明获锁、查库回填与等待复用，并补等待/旧值取舍及旧副本前提后再认定掌握 |
 | 随后复习 | Week 3 Day 2 / E06 / E10 / P10：Bloom filter 与 negative caching | Day 3 核心补答后短复测 | 独立区分集合成员关系与缓存命中，说明阴性/阳性、误判与初始化/更新前提；再说明 not-found marker、短 TTL 与新数据可见性，现仅有部分书面方向及误解证据 |
 | 随后复习 | Week 3 Day 1 / E09：缓存失效顺序与 TTL 边界 | 与 Day 2 遗留交替短复测 | 不看参考说清数据库权威、先更新数据库再失效缓存、TTL 与失效配合及回源代价；P1 用时间线指出旧值回填，现仅有书面方向证据 |
@@ -295,7 +298,7 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 |---|---|---|---|
 | 01 | System Design Basics | 需求、指标、估算、API、请求路径、扩展、权衡 | 进行中 |
 | 02 | Cache / Redis 基础 | 数据类型、TTL、淘汰、Cache-Aside | 进行中；Day 1、3 有部分书面产出，Day 2 待本人表达 |
-| 03 | Cache / Redis 进阶 | 一致性、穿透 / 击穿 / 雪崩、热 Key、原子操作与锁 | 进行中；Day 1–4 写作及 Day 3 补写已核对，Day 4 故障范围与保护路径待补，先前遗留及独立解释继续验证 |
+| 03 | Cache / Redis 进阶 | 一致性、穿透 / 击穿 / 雪崩、热 Key、原子操作与锁 | 进行中；Day 1–4 写作及 Day 3–4 补写已核对，下一文字任务为 Day 5；Day 4 随机偏移/范围及先前遗留继续独立复测 |
 | 04 | Database 基础 | 建模、SQL、索引、执行计划、慢查询 | 待开展 |
 | 05 | Database 进阶 | 事务、隔离、MVCC、锁、复制、读写分离、分片 | 待开展 |
 | 06 | Kafka / Message Queue | 分区、消费组、顺序、投递语义、重试、积压、死信 | 待开展 |
@@ -358,9 +361,9 @@ S007 命令追问（转写）：先答“I use set, set EX”，纠正后答“I
 
 ## 9. 最近练习记录
 
-### S018：Week 3 Day 4 写作审核与原文排版（文字，已收尾）
+### S018：Week 3 Day 4 写作、补写审核与原文排版（文字，已收尾）
 
-审核及录入日期：2026-10-24；用户自述 Day 4 书面书写已完成，实际日期与时长未确认。原文提出大量条目同时过期、错开过期时间和应用本地缓存，方向正确；但将单热点击穿与大范围雪崩合写，需按本周影响范围区分。缓存整体故障下回源限流、降级及本地缓存未命中保护为教练补充，非本人掌握证据。语言重点为 stampede、expiration times 和 to prevent ... from ...。已先仅排版原文，再补参考与简评，口述未验收。下次用两句区分范围，再补一句回源限制后继续 Day 5。
+审核及录入日期：2026-10-24，两轮沿用 S018；实际写作/补写日期、时长及脱稿情况未确认。初稿提出错开过期与本地缓存，但合写单热点/大范围故障；反馈后补版新增 TTL offset、回源限流及逐步预热，方案方向已补上，不升级独立掌握。本轮补各 key 不同随机偏移与同偏移无效的边界，修正 limit the rate of requests、during a cache stampede、as the cache recovers。Notion 保留原词排版并更新简评。文字可继续 Day 5，故障范围、随机性与限流代价留作口语短复测。
 
 ### S017：Week 3 Day 3 加载者与等待者补写审核（文字，已收尾）
 
@@ -550,5 +553,6 @@ Session ID：S010（依次递增；同一次练习只更新一条）
 | 2026-10-19 | v0.31 | 审核 W03 Day 3 写作，先保留原文措辞排版；记录击穿、请求合并及提前刷新书面方向，补等待复用路径、refresh-ahead 术语和等待/旧值取舍参考；更新快照、任务、能力、E11、P20、复习项与 S016，独立解释及口语未验收 |
 | 2026-10-21 | v0.32 | 审核 W03 Day 3 加载者补写，保留原词排版，记录等待者轮询方向已补上及 hold the key / acquire the lock 待澄清；更新快照、任务、能力、E06/E11、复习项与 S017，前次示范后补写不计独立掌握或口语完成 |
 | 2026-10-24 | v0.33 | 审核 W03 Day 4 写作，先保留原词排版；记录错开过期与本地缓存书面方向、故障范围混写及整体故障保护待补，更新快照、任务、能力、E12、P20、复习项与 S018；口语及整周完成状态不升级 |
+| 2026-10-24 | v0.34 | 核对 Day 4 反馈后补版，记录 TTL offset、回源限流与逐步预热方向已补上；新增随机偏移边界和 E13，更新同一 S018、任务/能力与复习项，文字任务继续 Day 5，独立解释及口语状态不升级 |
 
 初始来源：当前求职目标与学习偏好；已有全程周计划；`backend-week1-prompt.md`；`backend-week1-day1-chat-prompt.md`；已有 Day 1 与口语练习摘要。练习指令只作为计划来源，不作为完成证据。新练习优先用当次可观察的表现更新。
